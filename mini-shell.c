@@ -74,7 +74,7 @@ int run(std::string in)
 
         if ( pid == 0 )
         {
-            // CLOSE PIPES THAT DOESN'T BELONG
+            // CLOSE PIPES THAT DON'T BELONG
             for (int j = 0; j < pipes+2; ++j)
             {
                 if (i!=j)
