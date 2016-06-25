@@ -26,17 +26,12 @@ std::vector<std::string> explode(std::string const & s, char delim)
 }
 
 
-// char* string_to_char_array(char** arg, std::string s)
-// {
-//     strcpy(*arg, s.c_str());
-//     return *arg;
-// }
-
 void error_handler(char *e)
 {
     perror(e);
     exit(EXIT_FAILURE);
 }
+
 
 std::vector<int> find_pipes( std::vector<std::string> ins )
 {
@@ -63,8 +58,6 @@ int run(std::string in)
     args[ins.size()] = '\0';
 
     int pipeline[pipes+2][2]; // PIPELINE[0] NOT CURRENTLY IN USE :P
-    // close(pipeline[0][0]);
-    // close(pipeline[0][1]);
 
     for (int i = 0; i < pipes+2; ++i)
     {
@@ -94,35 +87,17 @@ int run(std::string in)
             }
 
             dup2(pipeline[i][0],0); // REFERENCE STDIN TO READ END OF PIPE
-            // dup2(pipeline[(i+1)%(pipes+2)][1],1); // REFERENCE STDOUT TO WRITE END OF NEXT PROCESS'S PIPE
             if (i!=pipes+1)
                 dup2(pipeline[(i+1)][1],1); // REFERENCE STDOUT TO WRITE END OF NEXT PROCESS'S PIPE
 
             char* buf[pipe_pos[i]-pipe_pos[i-1]]; // ARRAY OF THE SIZE OF COMMAND + ARGS + \0
             memcpy(buf , &args[pipe_pos[i-1]+1] , 8*(pipe_pos[i]-pipe_pos[i-1]+1)); // MAGIA
             buf[pipe_pos[i]-pipe_pos[i-1]-1] = '\0';
-            // char* buf[ins.size() + 1];
-            // read(pipeline[i][0], buf, sizeof(buf));
             
             if ( execvp(buf[0], buf) == -1 ){
                 std::cout << "\n";
                 error_handler(*buf);
             }
-        }
-        else
-        {
-
-            // int status;
-            // int a = waitpid(pid,&status,0);
-            // printf("%d\n%d\n",status,a );
-            // write(pipeline[1][1], args, sizeof(args));
-            // if (i == 2)
-            // {
-            // char buf[102400];
-            // read(pipeline[0][0], buf, 100000); // While read > 0 para cosas que escriben varias veces (ej. ping)
-            // std::cout << buf;
-            // memset(buf, 0, sizeof buf);
-            // }
         }
     }
 
